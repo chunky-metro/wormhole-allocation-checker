@@ -15,8 +15,12 @@ class WormholeAllocationChecker
   attr_reader :address, :chain
 
   def initialize(address, chain)
-    @address = address.downcase
+    @address = set_address(address)
     @chain = chain
+  end
+
+  def set_address(address)
+    chain.to_i == 2 ? address.downcase : address
   end
 
   def url
