@@ -15,12 +15,8 @@ class WormholeAllocationChecker
   attr_reader :address, :chain
 
   def initialize(address, chain)
-    @address = set_address(address)
+    @address = address
     @chain = chain
-  end
-
-  def set_address(address)
-    chain.to_i == 2 ? address.downcase : address
   end
 
   def url
@@ -30,6 +26,12 @@ class WormholeAllocationChecker
   def result
     HTTP.get(url).parse(:json).fetch("amount").to_i / 1_000_000_000.to_f
   rescue
-    "No allocation found"
+    attempts ||= 0
+    if (attempts += 1) < 2
+      @address = @address.downcase
+      retry
+    else
+      "No allocation found"
+    end
   end
 end
